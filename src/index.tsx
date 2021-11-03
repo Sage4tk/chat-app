@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+//context
+import { RoomProvider } from './context/RoomContext';
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <RoomProvider>
+      <App />
+    </RoomProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
