@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react"
-import {  useCollectionData } from "react-firebase-hooks/firestore";
+import { useState } from "react"
+import { useCollectionData } from "react-firebase-hooks/firestore";
 import firebase from "firebase/compat";
 import { useRoomSet } from "../context/RoomContext";
 
 const ChatNav: React.FC<any> = (props) => {
+    //context
+    const setRoom:any = useRoomSet();
+
     //display toggle
     const [chatlist, setChatList] = useState(false);
     
@@ -13,12 +16,17 @@ const ChatNav: React.FC<any> = (props) => {
         backgroundImage: `url(${photoURL})`
     }
 
+    const logOut = () => {
+        props.auth.signOut();
+        setRoom(null);
+    }
+
     return (
         <nav>
             <div className="user-avatar" style={image}>
                 <div className="user-info">
                     <p>{displayName}</p>
-                    <button onClick={() => {props.auth.signOut()}}>Log Out</button>
+                    <button onClick={() => {logOut()}}>Log Out</button>
                 </div>
             </div>
             <hr />
@@ -66,24 +74,67 @@ const UserRoom: React.FC<any> = (props) => {
 }
 
 const List: React.FC<any> = (props) => {
+    //userinfo
+    const { photoURL, uid, displayName } = props.user
+
+    //chatroom ref
     const roomRef = props.db.collection('chat-rooms');
     const ordered = roomRef.orderBy('created_at');
     const [rooms] = useCollectionData(ordered, {idField:'id'});
 
+    //user ref
+    const userRef = firebase.firestore().collection('users-saved');
+
+    const findUser = userRef.where('user', '==', uid)
+    const [userDb]:any = useCollectionData(findUser, {idField: "id"});
+
     const [formHandler, setFormHandler] = useState("");
 
-    const { photoURL } = props.user
 
     const createRoom = async(e:any) => {
         e.preventDefault();
-        if (!formHandler) {
+
+        //docref
+        let addId:any;
+
+        if (!formHandler.trim().length) {
             alert('Please put in the room name.')
         } else {
             await roomRef.add({
                 room_name: formHandler,
                 created_at: firebase.firestore.FieldValue.serverTimestamp(),
-                avatar: photoURL
-            })
+                avatar: photoURL,
+                members: [
+                    {
+                        name: displayName,
+                        avatar: photoURL,
+                        uid: uid
+                    }
+                ]
+            }).then((docRef:any) => {
+                addId = docRef.id;
+            });
+
+            //clearout form
+            setFormHandler('');
+
+            //add created room to users list
+            if (userDb?.length === 0) {
+                
+                userRef.add({
+                    user: uid,
+                    rooms: [addId]
+                })
+                props.setChatList(false)
+                
+            } else {
+                
+                userRef.doc(userDb[0].id).update({
+                    rooms: [...userDb[0].rooms, addId]
+                })
+                props.setChatList(false)
+                
+            }
         }
     }
 
@@ -108,40 +159,46 @@ const List: React.FC<any> = (props) => {
 
 const RoomList: React.FC<any> = (props) => {
     const { room_name, id } = props.rooms
-    const { uid } = props.user;
+    const { uid, photoURL, displayName } = props.user;
 
-    const userRef = firebase.firestore().collection('users-saved')
+    const userRef = firebase.firestore().collection('users-saved');
+    const roomRef = firebase.firestore().collection('chat-rooms');
 
     const findUser = userRef.where('user', '==', uid);
 
+    const [room]:any = useCollectionData(roomRef, {idField: 'id'});
     const [usar]:any = useCollectionData(findUser, {idField: 'id'});
 
     const addToList = async() => {
-        //find if user already has the room in their account;
-        // const findUser = await userRef.where('user', "==", uid).get();
-
-        // const clearFound = findUser.docs.map(doc => doc.data());
-
-        // //add new user if empty
-        // if (clearFound.length === 0) {
-        //     userRef.add({
-        //         user: uid,
-        //         rooms: [id]
-        //     })
-        // } else {
-        //     console.log(clearFound);
-        // }
+        //if no one is added
         if (usar?.length === 0) {
             await userRef.add({
                 user: uid,
                 rooms: [id]
             })
+            //add user to room list
+            await roomRef.doc(room[0].id).update({
+                members: [...room[0].members, {
+                    name: displayName,
+                    avatar: photoURL,
+                    uid: uid
+                }]
+            })
         } else {
             if (usar[0].rooms.includes(id)) {
                 alert('you already have this room added');
             } else {
-                userRef.doc(usar[0].id).update({
+                //add room to user
+                await userRef.doc(usar[0].id).update({
                     rooms: [...usar[0].rooms, id]
+                })
+                //add user to room list
+                await roomRef.doc(room[0].id).update({
+                    members: [...room[0].members, {
+                        name: displayName,
+                        avatar: photoURL,
+                        uid: uid
+                    }]
                 })
             }
         }

@@ -22,6 +22,7 @@ nav {
     position: relative;
     width: 100px;
     padding: 30px 15px;
+    z-index: 1;
 }
 
 nav hr {
@@ -102,4 +103,28 @@ nav .add {
     justify-content: center;
     margin-bottom: 17px;
     cursor: pointer;
+    transition: 0.5s ease-out;
+    &:hover {
+        border-radius: 40%;
+    }
+}
+
+.message-control {
+    display: flex;
+}
+
+.chat-section {
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.chat-section form {
+    position: absolute;
+    bottom: 0%;
+}
+
+.chat-box {
+    overflow-y: scroll;
+    height: 500px;
 }

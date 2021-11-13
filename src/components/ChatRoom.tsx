@@ -1,6 +1,4 @@
 import { Redirect } from 'react-router-dom';
-import firebase from 'firebase/compat';
-import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 //import components
 import ChatNav from './ChatNav';
@@ -23,7 +21,7 @@ const ChatRoom:React.FC<chatProps> = (props) => {
     return (
         <div className="chatroom">
             <ChatNav db={props.db} logged={props.logged} auth={props.auth} />
-            <MessagingBox />
+            <MessagingBox user={props.logged} />
         </div>
     )
 }
