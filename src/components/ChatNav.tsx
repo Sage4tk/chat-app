@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import firebase from "firebase/compat";
 import { useRoomSet } from "../context/RoomContext";
@@ -165,9 +165,14 @@ const RoomList: React.FC<any> = (props) => {
     const roomRef = firebase.firestore().collection('chat-rooms');
 
     const findUser = userRef.where('user', '==', uid);
+    const findRoom = roomRef.where(firebase.firestore.FieldPath.documentId(), "==", id)
 
-    const [room]:any = useCollectionData(roomRef, {idField: 'id'});
+    const [room]:any = useCollectionData(findRoom, {idField: 'id'});
     const [usar]:any = useCollectionData(findUser, {idField: 'id'});
+
+    useEffect(() => {
+        console.log(room)
+    }, [room])
 
     const addToList = async() => {
         //if no one is added

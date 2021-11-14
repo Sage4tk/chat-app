@@ -1,7 +1,7 @@
 import { useRoom } from "../context/RoomContext";
 import firebase from "firebase/compat";
 import { useCollectionData } from "react-firebase-hooks/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const MessagingBox: React.FC<any> = (props) => {
     const room = useRoom();
@@ -14,6 +14,17 @@ const MessagingBox: React.FC<any> = (props) => {
     const [inputText, setInputText] = useState<string>('');
 
     const { photoURL, displayName, uid } = props.user;
+
+    const boxRef:any = useRef(null);
+
+    //scroll to bottom command;
+    const scrollbottom = () => {
+        boxRef.current?.scrollIntoView();
+    }
+
+    useEffect(() => {
+        scrollbottom();
+    }, [message])
 
     const sendText = (e:any) => {
         e.preventDefault();
@@ -42,6 +53,7 @@ const MessagingBox: React.FC<any> = (props) => {
         <div className="chat-section">
             <div className="chat-box">
                 {message && message.map((e) => (<Message key={e.id} data={e}/>))}
+                <div ref={boxRef}></div>
             </div>
             <form onSubmit={sendText}>
                 <input type="text" value={inputText} onChange={(e) => {setInputText(e.target.value)}}/>
@@ -76,9 +88,9 @@ const MemberList: React.FC<any> = (props) => {
  
     return (
         <div>
-            <h1>List</h1>
+            <h1>Members</h1>
             <div>
-                {members[0].members && members[0].members.map((data:any) => <NameList data={data} key={data}/> )}
+                {members[0].members && members[0].members.map((data:any) => <NameList data={data} key={data.uid}/> )}
             </div>
         </div>
     )
@@ -91,10 +103,12 @@ interface NameReq {
 
 const NameList: React.FC<any> = (props) => {
 
-
     return (
         <div>
-            <h1>TEST</h1>
+            <img src={props.data.avatar} />
+            <div>
+                <p>{props.data.name}</p>
+            </div>
         </div>
     )
 }
