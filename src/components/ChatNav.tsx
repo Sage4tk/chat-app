@@ -77,6 +77,13 @@ const List: React.FC<any> = (props) => {
     //userinfo
     const { photoURL, uid, displayName } = props.user
 
+    //hide when added and let async kick in
+    const [hide, setHide] = useState(false);
+
+    const hideStyle = {
+        display: "none"
+    }
+
     //chatroom ref
     const roomRef = props.db.collection('chat-rooms');
     const ordered = roomRef.orderBy('created_at');
@@ -93,7 +100,7 @@ const List: React.FC<any> = (props) => {
 
     const createRoom = async(e:any) => {
         e.preventDefault();
-
+        setHide(true);
         //docref
         let addId:any;
 
@@ -125,6 +132,7 @@ const List: React.FC<any> = (props) => {
                     user: uid,
                     rooms: [addId]
                 })
+                setHide(false);
                 props.setChatList(false)
                 
             } else {
@@ -132,6 +140,7 @@ const List: React.FC<any> = (props) => {
                 userRef.doc(userDb[0].id).update({
                     rooms: [...userDb[0].rooms, addId]
                 })
+                setHide(false);
                 props.setChatList(false)
                 
             }
@@ -141,7 +150,7 @@ const List: React.FC<any> = (props) => {
     if (!props.display) return (null)
 
     return (
-        <div className="add-chatroom">
+        <div className="add-chatroom" style={hide?{display:'none'}:{display:"flex"}}>
             <div className="add-inside">
                 <h1>List</h1>
                 <div>
@@ -169,10 +178,6 @@ const RoomList: React.FC<any> = (props) => {
 
     const [room]:any = useCollectionData(findRoom, {idField: 'id'});
     const [usar]:any = useCollectionData(findUser, {idField: 'id'});
-
-    useEffect(() => {
-        console.log(room)
-    }, [room])
 
     const addToList = async() => {
         //if no one is added

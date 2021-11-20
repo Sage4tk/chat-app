@@ -1,15 +1,20 @@
 import { useRoom } from "../context/RoomContext";
 import firebase from "firebase/compat";
-import { useCollectionData } from "react-firebase-hooks/firestore";
+import { useCollectionData, useCollectionDataOnce } from "react-firebase-hooks/firestore";
 import { useEffect, useRef, useState } from "react";
 
 const MessagingBox: React.FC<any> = (props) => {
     const room = useRoom();
 
     const messageRef = firebase.firestore().collection(`chat-rooms/${room}/messages`);
+    const roomRef = firebase.firestore().collection('chat-rooms')
     //order query
     const ordered = messageRef.orderBy('created_at');
     const [message] = useCollectionData(ordered, {idField:"id"});
+
+    //getroom name
+    const findRoom = roomRef.where(firebase.firestore.FieldPath.documentId(), "==", String(room));
+    const [roomName]:any = useCollectionDataOnce(findRoom, {idField: "id"});
 
     const [inputText, setInputText] = useState<string>('');
 
@@ -22,9 +27,21 @@ const MessagingBox: React.FC<any> = (props) => {
         boxRef.current?.scrollIntoView();
     }
 
+    //roomname state
+    const [chatName, setChatName] = useState<any>(null)
+
     useEffect(() => {
         scrollbottom();
     }, [message])
+
+    useEffect(() => {
+        if (!roomName) {
+            return;
+        }
+        if (roomName.length !== 0) {
+            setChatName(roomName[0].room_name);
+        }
+    }, [roomName])
 
     const sendText = (e:any) => {
         e.preventDefault();
@@ -51,6 +68,9 @@ const MessagingBox: React.FC<any> = (props) => {
     }
     return (
         <div className="chat-section">
+            <div className="chat-roomname">
+                <h1>{chatName}</h1>
+            </div>
             <div className="chat-box">
                 {message && message.map((e) => (<Message key={e.id} data={e}/>))}
                 <div ref={boxRef}></div>
@@ -87,8 +107,8 @@ const MemberList: React.FC<any> = (props) => {
     if (!members) return (null);
  
     return (
-        <div>
-            <h1>Members</h1>
+        <div className="member-list">
+            <h2>Members</h2>
             <div>
                 {members[0].members && members[0].members.map((data:any) => <NameList data={data} key={data.uid}/> )}
             </div>
@@ -97,14 +117,14 @@ const MemberList: React.FC<any> = (props) => {
 }
 
 interface NameReq {
-    data: undefined | object,
+    data: undefined | object | any ,
     key: string
 }
 
-const NameList: React.FC<any> = (props) => {
+const NameList: React.FC<NameReq> = (props) => {
 
     return (
-        <div>
+        <div className="member-box">
             <img src={props.data.avatar} />
             <div>
                 <p>{props.data.name}</p>
