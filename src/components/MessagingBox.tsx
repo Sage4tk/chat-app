@@ -24,7 +24,7 @@ const MessagingBox: React.FC<any> = (props) => {
 
     //scroll to bottom command;
     const scrollbottom = () => {
-        boxRef.current?.scrollIntoView();
+        boxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
     }
 
     //roomname state
@@ -71,15 +71,18 @@ const MessagingBox: React.FC<any> = (props) => {
             <div className="chat-roomname">
                 <h1>{chatName}</h1>
             </div>
-            <div className="chat-box">
+            <div className="chat-box" >
                 {message && message.map((e) => (<Message key={e.id} data={e}/>))}
                 <div ref={boxRef}></div>
             </div>
-            <form onSubmit={sendText}>
-                <input type="text" value={inputText} onChange={(e) => {setInputText(e.target.value)}}/>
-                <button type="submit">submit</button>
-            </form>
             <MemberList room={room} />
+            <form onSubmit={sendText}>
+                <div>
+                    <input type="text" value={inputText} onChange={(e) => {setInputText(e.target.value)}}/>
+                    <button type="submit">submit</button>
+                </div>
+            </form>
+            
         </div>
     )
 }
