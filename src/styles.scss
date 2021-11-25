@@ -122,12 +122,42 @@ nav .add {
     align-items: center;
 }
 
+.add-inside form {
+    display: grid;
+    grid-template-columns: auto 100px;
+    height: 2rem;
+    button {
+        background: $dg;
+        border: none;
+        color: #fff;
+        padding: 0.2rem 0.2rem;
+        border-top-right-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        &:hover {
+            background: #36393F;
+        }
+    }
+
+    input {
+        background: #40444B;
+        border: none;
+        color: #fff;
+        padding: 0 1rem;
+        border-top-left-radius: 1rem;
+        border-bottom-left-radius: 1rem;
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
 .add-inside {
     background: #2F3136;
     width: 500px;
     margin-bottom: 8rem;
     padding: 2rem;
     border-radius: 10px;
+    position: relative;
 }
 
 .add-inside h1 {
@@ -137,7 +167,8 @@ nav .add {
 
 .add-container {
     overflow-y: auto;
-    height: 100px;
+    height: 200px;
+    margin-bottom: 1rem;
     &::-webkit-scrollbar {
         background: #36393F !important;
         width: 8px;
@@ -214,6 +245,39 @@ nav .add {
 
 .add-name {
     display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+}
+
+.add-close {
+    position: absolute;
+    top: 9%;
+    right: 6.5%;
+    background: $dg;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+    &:hover {
+        background: rgb(179, 2, 2);
+        color: #000;
+    }
+}
+
+.add-name button {
+    background: $dg;
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 4px 10px;
+    border-radius: 100%;
+    cursor: pointer;
+    &:hover {
+        background: #36393F;
+    }
+    margin-right: 0.5rem;
 }
 
 .room-avatar {

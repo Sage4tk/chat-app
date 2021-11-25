@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import firebase from "firebase/compat";
 import { useRoom, useRoomSet } from "../context/RoomContext";
@@ -83,10 +83,6 @@ const List: React.FC<any> = (props) => {
     //hide when added and let async kick in
     const [hide, setHide] = useState(false);
 
-    const hideStyle = {
-        display: "none"
-    }
-
     //chatroom ref
     const roomRef = props.db.collection('chat-rooms');
     const ordered = roomRef.orderBy('created_at');
@@ -163,7 +159,7 @@ const List: React.FC<any> = (props) => {
                     <input value={formHandler} onChange={(e) => setFormHandler(e.target.value)}/>
                     <button type="submit">Create Room</button>
                 </form>
-                <button onClick={() => props.setChatList(false)}>X</button>
+                <button onClick={() => props.setChatList(false)} className="add-close">close</button>
             </div>
         </div>
     )
@@ -220,7 +216,7 @@ const RoomList: React.FC<any> = (props) => {
     return (
         <div className="add-name">
             <p>{room_name}</p>
-            <button onClick={addToList}>ADD</button>
+            <button onClick={addToList}>+</button>
         </div>
     )
 }

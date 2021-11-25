@@ -94,7 +94,7 @@ const MessagingBox: React.FC<any> = (props) => {
 const Message: React.FC<any> = (props) => {
     return (
         <div className={props.uid === props.data.uid ? "message-control self":"message-control"}>
-            <img src={props.data.avatar} alt={props.data.name}/>
+            <img src={props.data.avatar} alt={props.data.name} />
             <div className="message-col">
                 <p>{props.data.name}</p>
                 <p>{props.data.text}</p>
@@ -131,7 +131,7 @@ const NameList: React.FC<NameReq> = (props) => {
 
     return (
         <div className="member-box">
-            <img src={props.data.avatar} />
+            <img src={props.data.avatar} alt=""/>
             <div>
                 <p>{props.data.name}</p>
             </div>
