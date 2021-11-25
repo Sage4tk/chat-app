@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useCollectionData } from "react-firebase-hooks/firestore";
 import firebase from "firebase/compat";
-import { useRoomSet } from "../context/RoomContext";
+import { useRoom, useRoomSet } from "../context/RoomContext";
 
 const ChatNav: React.FC<any> = (props) => {
     //context
@@ -59,6 +59,9 @@ const UserRoom: React.FC<any> = (props) => {
     const find = roomRef.where(firebase.firestore.FieldPath.documentId(), '==', props.data);
 
     const [data]:any = useCollectionData(find, {idField:"id"});
+    
+    //context to match if room is currently in use
+    const room = useRoom();
 
     if (!data) return (null);
 
@@ -67,9 +70,9 @@ const UserRoom: React.FC<any> = (props) => {
     }
 
     return (
-        <div className="room-avatar" style={background} onClick={() => {props.setRoom(data[0].id)}}>
-            
-        </div>
+        <div className={props.data === room ? "spacing current":"spacing"}>
+            <div className="room-avatar" style={background} onClick={() => {props.setRoom(data[0].id)}}></div>
+        </div>     
     )
 }
 
@@ -153,14 +156,14 @@ const List: React.FC<any> = (props) => {
         <div className="add-chatroom" style={hide?{display:'none'}:{display:"flex"}}>
             <div className="add-inside">
                 <h1>List</h1>
-                <div>
+                <div className="add-container">
                     {rooms && rooms.map(data => <RoomList key={data.id} rooms={data} user={props.user}/>)}
                 </div>
                 <form onSubmit={createRoom}> 
                     <input value={formHandler} onChange={(e) => setFormHandler(e.target.value)}/>
                     <button type="submit">Create Room</button>
                 </form>
-                <button onClick={() => props.setChatList(false)}>Close</button>
+                <button onClick={() => props.setChatList(false)}>X</button>
             </div>
         </div>
     )

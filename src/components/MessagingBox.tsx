@@ -61,8 +61,11 @@ const MessagingBox: React.FC<any> = (props) => {
 
     if (!room) {
         return (
-            <div>
-                <h1>No data set</h1>
+            <div className="no-room">
+                <div>
+                    <h1>Welcome!</h1>
+                    <p>Join or select a chat room.</p>
+                </div>
             </div>
         )
     }
@@ -72,14 +75,14 @@ const MessagingBox: React.FC<any> = (props) => {
                 <h1>{chatName}</h1>
             </div>
             <div className="chat-box" >
-                {message && message.map((e) => (<Message key={e.id} data={e}/>))}
+                {message && message.map((e) => (<Message key={e.id} data={e} uid={uid} />))}
                 <div ref={boxRef}></div>
             </div>
             <MemberList room={room} />
             <form onSubmit={sendText}>
                 <div>
                     <input type="text" value={inputText} onChange={(e) => {setInputText(e.target.value)}}/>
-                    <button type="submit">submit</button>
+                    <button type="submit">Send</button>
                 </div>
             </form>
             
@@ -90,7 +93,7 @@ const MessagingBox: React.FC<any> = (props) => {
 //message box
 const Message: React.FC<any> = (props) => {
     return (
-        <div className="message-control">
+        <div className={props.uid === props.data.uid ? "message-control self":"message-control"}>
             <img src={props.data.avatar} alt={props.data.name}/>
             <div className="message-col">
                 <p>{props.data.name}</p>

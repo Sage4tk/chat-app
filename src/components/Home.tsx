@@ -1,5 +1,9 @@
 import { Redirect } from "react-router-dom"
 
+//images
+import gButton from '../img/gButton.png';
+import gButtonF from '../img/gButtonF.png';
+
 interface HomeProp {
     func: any,
     logged: any
@@ -12,8 +16,12 @@ const Home:React.FC<HomeProp> = (props) => {
     }
     return (
         <div className="home">
-            <button onClick={() => props.func()}>Sign in with Google Account</button>
-
+            <div className="login-container">
+                <h1>T's Chat-App</h1>
+                <img alt="" src={gButton} onClick={() => props.func()} className="login-button" onMouseOver={e => (e.currentTarget.src = gButtonF)} onMouseOut={e => (e.currentTarget.src = gButton)} />
+                {/* <button onClick={() => props.func()}>Sign in with Google Account</button> */}
+            </div>
+            
         </div>
     )
 }
